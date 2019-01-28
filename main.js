@@ -556,7 +556,7 @@ $(document).ready(function(){
 				scr.theta = 1;
 				isTodo = false;
 				isLocate = true;
-				animateLocate();
+				window.requestAnimationFrame(animateLocate);
 				return;
 			}
 		}
@@ -598,15 +598,20 @@ $(document).ready(function(){
 				player.killEnemy = enemy[0].n;
 
 				isLocate = false;
-				animatePlay();
+				isPlay = true;
+				window.requestAnimationFrame(animatePlay);
 				return;
 			}
 		}
-		
-		setTimeout( animateLocate, 33 );
 	};
 	
 	function animatePlay(timestamp){
+		if (!isPlay) return;
+
+		window.requestAnimationFrame(animatePlay);
+		if (timestamp - lastTimestamp < interval) return;
+		lastTimestamp = timestamp;
+
 		context.clearRect( 0, 0, canvasWidth, canvasHeight );
 		
 		if( scr.theta < 99 ) moveScreen9( scr, mouse, wind );
@@ -653,14 +658,15 @@ $(document).ready(function(){
 						time.n++;
 						if( 211 * (time.n-3) > 0 ) scr.x = scr.ox = 211 * (time.n-3);
 						resetWizard( wizard );
-						animateSelectTime();
+
+						isPlay = false;
+						isSelectTime = true;
+						window.requestAnimationFrame(animateSelectTime);
 						return;
 					}
 				}
 			}
 		}
-		
-		setTimeout( animatePlay, 33 );
 	};
 	
 	init();
