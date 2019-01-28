@@ -6,7 +6,7 @@ $(document).ready(function(){
 
 	var key = new Object(), mouse = new Object;
 	var lastTimestamp = 0, fps = 60, interval = 1000 / fps;
-	var isSelectTime = false, isEntrance = false;
+	var isSelectTime = false, isEntrance = false, isSetting = false;
 	
 	var game = new Object();
 	var wind = new Object();
@@ -438,6 +438,7 @@ $(document).ready(function(){
 				else{
 					game.status = 4;
 					isSelectTime = false;
+					isSetting = true;
 					animateSetting();
 				}
 				return;
@@ -474,6 +475,7 @@ $(document).ready(function(){
 				newParticle( particle, 0, 0, 11, 1, 0, 0, 1.0, 1.0, 45, 0, 0, 0, 30 );
 				scr.x = scr.y = scr.ox = scr.oy = scr.vx = scr.theta = 0;
 				isEntrance = false;
+				isSetting = true;
 				animateSetting();
 				return;
 			}
@@ -481,6 +483,12 @@ $(document).ready(function(){
 	};
 	
 	function animateSetting(){
+		if (!isSetting) return;
+
+		window.requestAnimationFrame(animateSetting);
+		if (timestamp - lastTimestamp < interval) return;
+		lastTimestamp = timestamp;
+
 		context.clearRect( 0, 0, canvasWidth, canvasHeight );
 		
 		moveStar( star );
@@ -507,6 +515,7 @@ $(document).ready(function(){
 				scr.vy = -6.4;
 				setEnemy( enemy, 1, false );
 				educateWizard( wizard );
+				isSetting = false;
 				animateTodo();
 				return;
 			}
