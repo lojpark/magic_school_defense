@@ -6,7 +6,7 @@ $(document).ready(function(){
 
 	var key = new Object(), mouse = new Object;
 	var lastTimestamp = 0, fps = 60, interval = 1000 / fps;
-	var isSelectTime = false;
+	var isSelectTime = false, isEntrance = false;
 	
 	var game = new Object();
 	var wind = new Object();
@@ -432,6 +432,7 @@ $(document).ready(function(){
 						newWizard( wizard, 0, Math.floor(Math.random()*6)+1 );
 					}
 					isSelectTime = false;
+					isEntrance = true;
 					animateEntrance();
 				}
 				else{
@@ -449,6 +450,11 @@ $(document).ready(function(){
 	};
 	
 	function animateEntrance(){
+		if (!isEntrance) return;
+
+		window.requestAnimationFrame(animateEntrance);
+		if (timestamp - lastTimestamp < interval) return;
+		lastTimestamp = timestamp;
 		context.clearRect( 0, 0, canvasWidth, canvasHeight );
 		
 		moveParticle( particle );
@@ -467,12 +473,11 @@ $(document).ready(function(){
 			if( particle[1].time == 1 ){
 				newParticle( particle, 0, 0, 11, 1, 0, 0, 1.0, 1.0, 45, 0, 0, 0, 30 );
 				scr.x = scr.y = scr.ox = scr.oy = scr.vx = scr.theta = 0;
+				isEntrance = false;
 				animateSetting();
 				return;
 			}
 		}
-		
-		setTimeout( animateEntrance, 33 );
 	};
 	
 	function animateSetting(){
