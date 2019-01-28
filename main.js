@@ -6,7 +6,7 @@ $(document).ready(function(){
 
 	var key = new Object(), mouse = new Object;
 	var lastTimestamp = 0, fps = 60, interval = 1000 / fps;
-	var isSelectTime = false, isEntrance = false, isSetting = false, isTodo = false;
+	var isSelectTime = false, isEntrance = false, isSetting = false, isTodo = false, isLocate = false;
 	
 	var game = new Object();
 	var wind = new Object();
@@ -555,6 +555,7 @@ $(document).ready(function(){
 				scr.x = scr.y = scr.ox = scr.oy = scr.vx = 0;
 				scr.theta = 1;
 				isTodo = false;
+				isLocate = true;
 				animateLocate();
 				return;
 			}
@@ -562,6 +563,12 @@ $(document).ready(function(){
 	};
 	
 	function animateLocate(timestamp){
+		if (!isLocate) return;
+
+		window.requestAnimationFrame(animateLocate);
+		if (timestamp - lastTimestamp < interval) return;
+		lastTimestamp = timestamp;
+
 		context.clearRect( 0, 0, canvasWidth, canvasHeight );
 		
 		if( game.status != 7 ) moveScreen9( scr, mouse, wind );
@@ -589,6 +596,8 @@ $(document).ready(function(){
 				else setEnemy( enemy, 2, true );
 				player.inMoney = player.outMoney = 0;
 				player.killEnemy = enemy[0].n;
+
+				isLocate = false;
 				animatePlay();
 				return;
 			}
