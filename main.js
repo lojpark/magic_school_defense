@@ -5,6 +5,8 @@ $(document).ready(function(){
 	var canvasHeight = canvas.height();
 
 	var key = new Object(), mouse = new Object;
+	var lastTimestamp = 0, fps = 60, interval = 1000 / fps;
+	var isSelectTime = false;
 	
 	var game = new Object();
 	var wind = new Object();
@@ -391,13 +393,20 @@ $(document).ready(function(){
 		initTime( time );
 		initText( text );
 
-		animateSelectTime();
+		isSelectTime = true;
+		window.requestAnimationFrame(animateSelectTime);
 		//animateSetting();
 		//animateLocate();
 		//animatePlay();
 	};
 	
-	function animateSelectTime(){
+	function animateSelectTime() {
+		if (!isSelectTime) return;
+
+		window.requestAnimationFrame(animateSelectTime);
+		if (timestamp - lastTimestamp < interval) return;
+		lastTimestamp = timestamp;
+		
 		context.clearRect( 0, 0, canvasWidth, canvasHeight );
 		
 		moveStar( star );
@@ -422,10 +431,12 @@ $(document).ready(function(){
 					for( i = 1; i < stone.n - n; i++ ){
 						newWizard( wizard, 0, Math.floor(Math.random()*6)+1 );
 					}
+					isSelectTime = false;
 					animateEntrance();
 				}
 				else{
 					game.status = 4;
+					isSelectTime = false;
 					animateSetting();
 				}
 				return;
@@ -435,8 +446,6 @@ $(document).ready(function(){
 		/*context.font = "15px helvetica";
 		context.fillStyle = "rgb(0,0,0)";
 		context.fillText( mouse.x + " , " + mouse.y + " , " + scr.x, 10, 340 );*/
-		
-		setTimeout( animateSelectTime, 33 );
 	};
 	
 	function animateEntrance(){
