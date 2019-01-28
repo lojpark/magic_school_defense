@@ -6,7 +6,7 @@ $(document).ready(function(){
 
 	var key = new Object(), mouse = new Object;
 	var lastTimestamp = 0, fps = 60, interval = 1000 / fps;
-	var isSelectTime = false, isEntrance = false, isSetting = false;
+	var isSelectTime = false, isEntrance = false, isSetting = false, isTodo = false;
 	
 	var game = new Object();
 	var wind = new Object();
@@ -400,7 +400,7 @@ $(document).ready(function(){
 		//animatePlay();
 	};
 	
-	function animateSelectTime() {
+	function animateSelectTime(timestamp) {
 		if (!isSelectTime) return;
 
 		window.requestAnimationFrame(animateSelectTime);
@@ -433,13 +433,13 @@ $(document).ready(function(){
 					}
 					isSelectTime = false;
 					isEntrance = true;
-					animateEntrance();
+					window.requestAnimationFrame(animateEntrance);
 				}
 				else{
 					game.status = 4;
 					isSelectTime = false;
 					isSetting = true;
-					animateSetting();
+					window.requestAnimationFrame(animateSetting);
 				}
 				return;
 			}
@@ -450,7 +450,7 @@ $(document).ready(function(){
 		context.fillText( mouse.x + " , " + mouse.y + " , " + scr.x, 10, 340 );*/
 	};
 	
-	function animateEntrance(){
+	function animateEntrance(timestamp){
 		if (!isEntrance) return;
 
 		window.requestAnimationFrame(animateEntrance);
@@ -476,13 +476,13 @@ $(document).ready(function(){
 				scr.x = scr.y = scr.ox = scr.oy = scr.vx = scr.theta = 0;
 				isEntrance = false;
 				isSetting = true;
-				animateSetting();
+				window.requestAnimationFrame(animateSetting);
 				return;
 			}
 		}
 	};
 	
-	function animateSetting(){
+	function animateSetting(timestamp){
 		if (!isSetting) return;
 
 		window.requestAnimationFrame(animateSetting);
@@ -516,15 +516,20 @@ $(document).ready(function(){
 				setEnemy( enemy, 1, false );
 				educateWizard( wizard );
 				isSetting = false;
-				animateTodo();
+				isTodo = true;
+				window.requestAnimationFrame(animateTodo);
 				return;
 			}
 		}
-		
-		setTimeout( animateSetting, 33 );
 	};
 	
-	function animateTodo(){
+	function animateTodo(timestamp){
+		if (!isTodo) return;
+
+		window.requestAnimationFrame(animateTodo);
+		if (timestamp - lastTimestamp < interval) return;
+		lastTimestamp = timestamp;
+
 		context.clearRect( 0, 0, canvasWidth, canvasHeight );
 		
 		moveScreen5( scr, player, particle, btn, game, wind, mouse, text );
@@ -549,15 +554,14 @@ $(document).ready(function(){
 				newParticle( particle, 0, 0, 11, 1, 0, 0, 1.0, 1.0, 45, 0, 0, 0, 30 );
 				scr.x = scr.y = scr.ox = scr.oy = scr.vx = 0;
 				scr.theta = 1;
+				isTodo = false;
 				animateLocate();
 				return;
 			}
 		}
-		
-		setTimeout( animateTodo, 33 );
 	};
 	
-	function animateLocate(){
+	function animateLocate(timestamp){
 		context.clearRect( 0, 0, canvasWidth, canvasHeight );
 		
 		if( game.status != 7 ) moveScreen9( scr, mouse, wind );
@@ -593,7 +597,7 @@ $(document).ready(function(){
 		setTimeout( animateLocate, 33 );
 	};
 	
-	function animatePlay(){
+	function animatePlay(timestamp){
 		context.clearRect( 0, 0, canvasWidth, canvasHeight );
 		
 		if( scr.theta < 99 ) moveScreen9( scr, mouse, wind );
